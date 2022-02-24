@@ -1,0 +1,36 @@
+---
+
+- name: Update and upgrade
+  shell:
+    "apt update && apt upgrade -y"
+  become: true
+
+- name: Install required system packages
+  apt: name={{ item }} state=latest update_cache=yes
+  loop: ['ca-certificates', 'curl', 'openssh-server', 'postfix']
+  become: true
+
+- name: Download bash script
+  shell:
+     "curl -LO https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh"
+  become: true
+
+- name: Start bash script
+  shell:
+     "bash script.deb.sh"
+  become: true
+
+- name: Install gitlab-ce
+  shell:
+     "apt-get install gitlab-ce -y"
+  become: true
+
+- name: Reconfigure gitlab
+  shell:
+     "sudo gitlab-ctl reconfigure"
+  become: true
+
+- name: Start gitlab
+  shell:
+     "gitlab-ctl start"
+  become: true
